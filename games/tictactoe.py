@@ -1,5 +1,7 @@
 import numpy as np
 from games.common import TwoPlayersGameState, Action
+from games.players import PlayerWithOpponent
+
 
 class TicTacToeAction(Action):
     def __init__(self, x_coordinate, y_coordinate, value):
@@ -12,15 +14,15 @@ class TicTacToeAction(Action):
 
 class TicTacToeState(TwoPlayersGameState):
 
-    def __init__(self, state: np.ndarray, next_to_move : int):
-        TwoPlayersGameState.__init__(self, state, next_to_move)
+    def __init__(self, state: np.ndarray, player_to_move : PlayerWithOpponent):
+        TwoPlayersGameState.__init__(self, state, player_to_move)
 
     def move(self, action):
         if not self._is_action_legal(action):
             raise ValueError("action is not legal")
         new_state = np.copy(self.state)
         new_state[action.x_coordinate, action.y_coordinate] = action.value
-        return TicTacToeState(new_state, self.next_to_move * -1)
+        return TicTacToeState(new_state, self.player_to_move.opponent)
 
     def _is_action_legal(self, action):
         x_in_range = action.x_coordinate < 3 and action.x_coordinate >= 0
@@ -30,7 +32,7 @@ class TicTacToeState(TwoPlayersGameState):
         if not y_in_range:
             return False
 
-        v_in_range = action.value == self.next_to_move
+        v_in_range = action.value == self.player_to_move.move_value
         return v_in_range
 
     def game_result(self):
@@ -47,4 +49,4 @@ class TicTacToeState(TwoPlayersGameState):
 
     def get_legal_actions(self):
         indices = np.where(self.state == 0)
-        return [TicTacToeAction(coords[0], coords[1], self.next_to_move) for coords in list(zip(indices[0], indices[1]))]
+        return [TicTacToeAction(coords[0], coords[1], self.player_to_move.move_value) for coords in list(zip(indices[0], indices[1]))]

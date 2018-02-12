@@ -1,30 +1,30 @@
 import numpy as np
+from collections import defaultdict
 from mcts.tictactoe import *
 from games.tictactoe import *
 
-class TicTacToeMonteCarloTreeSearch:
+class MonteCarloTreeSearchSimulation:
 
-    def __init__(self, root, number_of_simulations):
-        self.root = root
-        self.number_of_simulations = number_of_simulations
+    def __init__(self, starting_node):
+        self.starting_node = starting_node
 
-    def simulate(self, state):
-        root = TicTacToeMonteCarloTreeSearchNode(current_state = TicTacToeState(state = state), next_to_move = 1))
-        for N_total in range(1,100):
-            current_node = root
+    def simulate(self, number_of_simulations):
+        for n_total in range(1, number_of_simulations):
+            current_node = self.starting_node
             while(True):
                 if current_node.is_leaf():
                     break
                 else:
-                    current_node = current_node.choose_node_to_explore(N_total)
+                    current_node = current_node.choose_node_to_explore(n_total)
 
-            expanded_node = current_node.expand(N_total)
+            expanded_node = current_node.expand(n_total)
             if expanded_node:
                 game_result = expanded_node.rollout()
                 expanded_node.backpropagate(game_result)
             else:
-                game_result = current_node.current_state.game_result()
+                game_result = current_node.state.game_result()
                 current_node.backpropagate(game_result)
+
 
 class AbstractNode:
     children = None
@@ -35,10 +35,11 @@ class AbstractNode:
 
 class AbstractMonteCarloTreeSearchNode(AbstractNode):
 
-    def __init__(self, current_state):
-        self.current_state = current_state
-        self.value = 0.
+    def __init__(self, state, parent):
+        self.state = state
         self.number_of_visits = 0.
+        self.results = defaultdict(lambda  : 0)
+        self.parent = parent
 
     def expand(self, N_total):
         self.children = self.compute_child_nodes()
@@ -49,11 +50,19 @@ class AbstractMonteCarloTreeSearchNode(AbstractNode):
         if self.is_leaf():
             return None
         else:
-            choices_weights = [ self._node_choice_metric(c.value, c.number_of_visits, N_total, c_param) for c in self.children]
+            choices_weights = [
+                self._node_choice_metric(
+                    c.results[self.state.player_to_move.game_result_winning_value] if self.state.player_to_move.game_result_winning_value in c.results else 0,
+                    c.number_of_visits,
+                    N_total,
+                    c_param
+                )
+                for c in self.children
+            ]
             return self.children[np.argmax(choices_weights)]
 
     def rollout(self):
-        current_rollout_state = self.current_state
+        current_rollout_state = self.state
         while(True):
             possible_moves = current_rollout_state.get_legal_actions()
             if len(possible_moves) > 0:
@@ -65,7 +74,7 @@ class AbstractMonteCarloTreeSearchNode(AbstractNode):
         return rollout_result
 
     def backpropagate(self, rollout_result):
-        self.value += rollout_result
+        self.results[rollout_result] += 1
         self.number_of_visits += 1.
         if self.parent:
             self.parent.backpropagate(rollout_result)
