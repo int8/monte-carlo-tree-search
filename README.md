@@ -10,18 +10,15 @@ to run try:
 ```python
 
 import numpy as np
-from mcts.tictactoe import *
-from mcts.common import MonteCarloTreeSearchSimulation
-from games.tictactoe import *
-from games.players import *
+from mcts.nodes import *
+from mcts.search import MonteCarloTreeSearch
+from games.tictactoe import TicTacToeGameState
 
-player_x = PlayerWithOpponent(move_value = 1, game_result_winning_value = 1, game_result_losing_value = 0, game_result_draw_value = 0.5)
-player_o = PlayerWithOpponent(move_value = -1, game_result_winning_value = 0, game_result_losing_value = 1, game_result_draw_value = 0.5)
-player_x.define_opponent(player_o)
-player_o.define_opponent(player_x)
 
-root = TicTacToeMonteCarloTreeSearchNode(current_state = TicTacToeState(state = np.zeros((3,3)), player_to_move = player_x), parent = None)
-mcts = MonteCarloTreeSearchSimulation(root)
-mcts.simulate(1000)
+initial_board_state = TicTacToeGameState(state = np.zeros((3,3)), next_to_move = 1)
+
+root = TwoPlayersGameMonteCarloTreeSearchNode(state = initial_board_state, parent = None)
+mcts = MonteCarloTreeSearch(root)
+best_node = mcts.best_action(1000)
 
 ```
