@@ -1,9 +1,6 @@
-## Experimental implementation of Monte Carlo Tree Search algorithm
+## Implementation of basic Monte Carlo Tree Search algorithm for Tic Tac Toe
 
-The purpose of this code is to create MCTS + neural-network based chess bot. So far, simple implementation of MCTS for tic-tac-toe
-
-(code may still be buggy, not tested)
-
+This is supplementary code for [Monte Carlo Tree Search tutorial blog post here](int8.io/monte-carlo-tree-search-beginners-guide)
 
 to run try:
 
@@ -14,8 +11,8 @@ from mcts.nodes import *
 from mcts.search import MonteCarloTreeSearch
 from games.tictactoe import TicTacToeGameState
 
-
-initial_board_state = TicTacToeGameState(state = np.zeros((3,3)), next_to_move = 1)
+state = np.zeros((3,3))
+initial_board_state = TicTacToeGameState(state = state, next_to_move = 1)
 
 root = TwoPlayersGameMonteCarloTreeSearchNode(state = initial_board_state, parent = None)
 mcts = MonteCarloTreeSearch(root)
