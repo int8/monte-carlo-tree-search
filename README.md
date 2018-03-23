@@ -1,6 +1,6 @@
 ## Implementation of basic Monte Carlo Tree Search algorithm for Tic Tac Toe
 
-This is supplementary code for [Monte Carlo Tree Search tutorial blog post here](int8.io/monte-carlo-tree-search-beginners-guide)
+This is supplementary code for [Monte Carlo Tree Search tutorial blog post here](https://int8.io/monte-carlo-tree-search-beginners-guide)
 
 to run try:
 
