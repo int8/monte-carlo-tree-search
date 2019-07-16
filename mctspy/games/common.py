@@ -2,8 +2,7 @@ from abc import ABC, abstractmethod
 
 
 class TwoPlayersAbstractGameState(ABC):
-    
-    @property
+
     @abstractmethod
     def game_result(self):
         """

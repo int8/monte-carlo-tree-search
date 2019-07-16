@@ -74,10 +74,13 @@ class TwoPlayersGameMonteCarloTreeSearchNode(MonteCarloTreeSearchNode):
         super().__init__(state, parent)
         self._number_of_visits = 0.
         self._results = defaultdict(int)
+        self._untried_actions = None
 
     @property
     def untried_actions(self):
-        return self.state.get_legal_actions()
+        if self._untried_actions is None:
+            self._untried_actions = self.state.get_legal_actions()
+        return self._untried_actions
 
     @property
     def q(self):

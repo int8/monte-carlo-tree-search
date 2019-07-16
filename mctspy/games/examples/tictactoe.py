@@ -32,18 +32,18 @@ class TicTacToeGameState(TwoPlayersAbstractGameState):
         diag_sum_tl = self.board.trace()
         diag_sum_tr = self.board[::-1].trace()
 
-        player_one_wins = np.any(rowsum == self.board_size)
-        player_one_wins += np.any(colsum == self.board_size)
-        player_one_wins += diag_sum_tl == self.board_size
-        player_one_wins += diag_sum_tr == self.board_size
+        player_one_wins = any(rowsum == self.board_size)
+        player_one_wins += any(colsum == self.board_size)
+        player_one_wins += (diag_sum_tl == self.board_size)
+        player_one_wins += (diag_sum_tr == self.board_size)
 
         if player_one_wins:
             return self.x
 
-        player_two_wins = np.any(rowsum == -self.board_size)
-        player_two_wins += np.any(colsum == -self.board_size)
-        player_two_wins += diag_sum_tl == -self.board_size
-        player_two_wins += diag_sum_tr == -self.board_size
+        player_two_wins = any(rowsum == -self.board_size)
+        player_two_wins += any(colsum == -self.board_size)
+        player_two_wins += (diag_sum_tl == -self.board_size)
+        player_two_wins += (diag_sum_tr == -self.board_size)
 
         if player_two_wins:
             return self.o
@@ -63,12 +63,12 @@ class TicTacToeGameState(TwoPlayersAbstractGameState):
             return False
 
         # check if inside the board on x-axis
-        x_in_range = 0 <= move.x_coordinate < self.board_size
+        x_in_range = (0 <= move.x_coordinate < self.board_size)
         if not x_in_range:
             return False
 
         # check if inside the board on y-axis
-        y_in_range = 0 <= move.y_coordinate < self.board_size
+        y_in_range = (0 <= move.y_coordinate < self.board_size)
         if not y_in_range:
             return False
 
