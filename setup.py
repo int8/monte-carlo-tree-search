@@ -28,5 +28,5 @@ setup(
         "Operating System :: OS Independent",
     ],
     url='https://github.com/int8/monte-carlo-tree-search',
-    version='0.1.6'
+    version='0.1.1'
 )

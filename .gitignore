@@ -9,3 +9,6 @@ data/
 logs/
 *.ipynb
 __pycache__
+build/
+dist/
+mctspy.egg-info/
