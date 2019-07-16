@@ -9,7 +9,11 @@ class TicTacToeMove(AbstractGameAction):
         self.value = value
 
     def __repr__(self):
-        return f"x:{self.x_coordinate} y:{self.y_coordinate} v:{self.value}"
+        return "x:{0} y:{1} v:{2}".format(
+            self.x_coordinate,
+            self.y_coordinate,
+            self.value
+        )
 
 
 class TicTacToeGameState(TwoPlayersAbstractGameState):
@@ -77,7 +81,9 @@ class TicTacToeGameState(TwoPlayersAbstractGameState):
 
     def move(self, move):
         if not self.is_move_legal(move):
-            raise ValueError(f"move {move} on board {self.board} is not legal")
+            raise ValueError(
+                "move {0} on board {1} is not legal". format(move, self.board)
+            )
         new_board = np.copy(self.board)
         new_board[move.x_coordinate, move.y_coordinate] = move.value
         if self.next_to_move == TicTacToeGameState.x:
