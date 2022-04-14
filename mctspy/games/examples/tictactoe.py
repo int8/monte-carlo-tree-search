@@ -1,32 +1,14 @@
 import numpy as np
-from mctspy.games.common import TwoPlayersAbstractGameState, AbstractGameAction
+from mctspy.games.examples.tictactoe import TicTacToeMove, TicTacToeGameState
 
+class Connect4Move(TicTacToeMove):
+    pass
 
-class TicTacToeMove(AbstractGameAction):
-    def __init__(self, x_coordinate, y_coordinate, value):
-        self.x_coordinate = x_coordinate
-        self.y_coordinate = y_coordinate
-        self.value = value
+class Connect4GameState(TicTacToeGameState):
 
-    def __repr__(self):
-        return "x:{0} y:{1} v:{2}".format(
-            self.x_coordinate,
-            self.y_coordinate,
-            self.value
-        )
+    def __init__(self, state, next_to_move=1, win=None):
+        super().__init__(state, next_to_move,win)
 
-
-class TicTacToeGameState(TwoPlayersAbstractGameState):
-
-    x = 1
-    o = -1
-
-    def __init__(self, state, next_to_move=1):
-        if len(state.shape) != 2 or state.shape[0] != state.shape[1]:
-            raise ValueError("Only 2D square boards allowed")
-        self.board = state
-        self.board_size = state.shape[0]
-        self.next_to_move = next_to_move
 
     @property
     def game_result(self):
