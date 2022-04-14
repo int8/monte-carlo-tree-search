@@ -76,7 +76,7 @@ class TicTacToeGameState(TwoPlayersAbstractGameState):
         if not y_in_range:
             return False
 
-        # finally check if board field not occupied yet
+        # finally check if board field not occupied ye
         return self.board[move.x_coordinate, move.y_coordinate] == 0
 
     def move(self, move):
@@ -86,12 +86,11 @@ class TicTacToeGameState(TwoPlayersAbstractGameState):
             )
         new_board = np.copy(self.board)
         new_board[move.x_coordinate, move.y_coordinate] = move.value
-        if self.next_to_move == TicTacToeGameState.x:
-            next_to_move = TicTacToeGameState.o
+        if self.next_to_move == self.x:
+            next_to_move = self.o
         else:
-            next_to_move = TicTacToeGameState.x
-
-        return TicTacToeGameState(new_board, next_to_move, self.win)
+            next_to_move = self.x
+        return type(self)(new_board, next_to_move, self.win)
 
     def get_legal_actions(self):
         indices = np.where(self.board == 0)
