@@ -1,39 +1,57 @@
 import numpy as np
-from mctspy.games.examples.tictactoe import TicTacToeMove, TicTacToeGameState
+from mctspy.games.common import TwoPlayersAbstractGameState, AbstractGameAction
 
-class Connect4Move(TicTacToeMove):
-    pass
 
-class Connect4GameState(TicTacToeGameState):
+class TicTacToeMove(AbstractGameAction):
+    def __init__(self, x_coordinate, y_coordinate, value):
+        self.x_coordinate = x_coordinate
+        self.y_coordinate = y_coordinate
+        self.value = value
+
+    def __repr__(self):
+        return "x:{0} y:{1} v:{2}".format(
+            self.x_coordinate,
+            self.y_coordinate,
+            self.value
+        )
+
+
+class TicTacToeGameState(TwoPlayersAbstractGameState):
+
+    x = 1
+    o = -1
 
     def __init__(self, state, next_to_move=1, win=None):
-        super().__init__(state, next_to_move,win)
-
+        if len(state.shape) != 2 or state.shape[0] != state.shape[1]:
+            raise ValueError("Only 2D square boards allowed")
+        self.board = state
+        self.board_size = state.shape[0]
+        if win is None:
+            win = self.board_size
+        self.win = win
+        self.next_to_move = next_to_move
 
     @property
     def game_result(self):
         # check if game is over
-        rowsum = np.sum(self.board, 0)
-        colsum = np.sum(self.board, 1)
-        diag_sum_tl = self.board.trace()
-        diag_sum_tr = self.board[::-1].trace()
+        for i in range(self.board_size - self.win + 1):
+            rowsum = np.sum(self.board[i:i+self.win], 0)
+            colsum = np.sum(self.board[:,i:i+self.win], 1)
+            if rowsum.max() == self.win or colsum.max() == self.win:
+                return self.x
+            if rowsum.min() == -self.win or colsum.min() == -self.win:
+                return self.o
+        for i in range(self.board_size - self.win + 1):
+            for j in range(self.board_size - self.win + 1):
+                sub = self.board[i:i+self.win,j:j+self.win]
+                diag_sum_tl = sub.trace()
+                diag_sum_tr = sub[::-1].trace()        
+                if diag_sum_tl == self.win or diag_sum_tr == self.win:
+                    return self.x
+                if diag_sum_tl == -self.win or diag_sum_tr == -self.win:
+                    return self.o
 
-        player_one_wins = any(rowsum == self.board_size)
-        player_one_wins += any(colsum == self.board_size)
-        player_one_wins += (diag_sum_tl == self.board_size)
-        player_one_wins += (diag_sum_tr == self.board_size)
-
-        if player_one_wins:
-            return self.x
-
-        player_two_wins = any(rowsum == -self.board_size)
-        player_two_wins += any(colsum == -self.board_size)
-        player_two_wins += (diag_sum_tl == -self.board_size)
-        player_two_wins += (diag_sum_tr == -self.board_size)
-
-        if player_two_wins:
-            return self.o
-
+        # draw
         if np.all(self.board != 0):
             return 0.
 
@@ -73,7 +91,7 @@ class Connect4GameState(TicTacToeGameState):
         else:
             next_to_move = TicTacToeGameState.x
 
-        return TicTacToeGameState(new_board, next_to_move)
+        return TicTacToeGameState(new_board, next_to_move, self.win)
 
     def get_legal_actions(self):
         indices = np.where(self.board == 0)
