@@ -21,37 +21,37 @@ class TicTacToeGameState(TwoPlayersAbstractGameState):
     x = 1
     o = -1
 
-    def __init__(self, state, next_to_move=1):
+    def __init__(self, state, next_to_move=1, win=None):
         if len(state.shape) != 2 or state.shape[0] != state.shape[1]:
             raise ValueError("Only 2D square boards allowed")
         self.board = state
         self.board_size = state.shape[0]
+        if win is None:
+            win = self.board_size
+        self.win = win
         self.next_to_move = next_to_move
 
     @property
     def game_result(self):
         # check if game is over
-        rowsum = np.sum(self.board, 0)
-        colsum = np.sum(self.board, 1)
-        diag_sum_tl = self.board.trace()
-        diag_sum_tr = self.board[::-1].trace()
+        for i in range(self.board_size - self.win + 1):
+            rowsum = np.sum(self.board[i:i+self.win], 0)
+            colsum = np.sum(self.board[:,i:i+self.win], 1)
+            if rowsum.max() == self.win or colsum.max() == self.win:
+                return self.x
+            if rowsum.min() == -self.win or colsum.min() == -self.win:
+                return self.o
+        for i in range(self.board_size - self.win + 1):
+            for j in range(self.board_size - self.win + 1):
+                sub = self.board[i:i+self.win,j:j+self.win]
+                diag_sum_tl = sub.trace()
+                diag_sum_tr = sub[::-1].trace()        
+                if diag_sum_tl == self.win or diag_sum_tr == self.win:
+                    return self.x
+                if diag_sum_tl == -self.win or diag_sum_tr == -self.win:
+                    return self.o
 
-        player_one_wins = any(rowsum == self.board_size)
-        player_one_wins += any(colsum == self.board_size)
-        player_one_wins += (diag_sum_tl == self.board_size)
-        player_one_wins += (diag_sum_tr == self.board_size)
-
-        if player_one_wins:
-            return self.x
-
-        player_two_wins = any(rowsum == -self.board_size)
-        player_two_wins += any(colsum == -self.board_size)
-        player_two_wins += (diag_sum_tl == -self.board_size)
-        player_two_wins += (diag_sum_tr == -self.board_size)
-
-        if player_two_wins:
-            return self.o
-
+        # draw
         if np.all(self.board != 0):
             return 0.
 
@@ -76,7 +76,7 @@ class TicTacToeGameState(TwoPlayersAbstractGameState):
         if not y_in_range:
             return False
 
-        # finally check if board field not occupied yet
+        # finally check if board field not occupied ye
         return self.board[move.x_coordinate, move.y_coordinate] == 0
 
     def move(self, move):
@@ -86,12 +86,11 @@ class TicTacToeGameState(TwoPlayersAbstractGameState):
             )
         new_board = np.copy(self.board)
         new_board[move.x_coordinate, move.y_coordinate] = move.value
-        if self.next_to_move == TicTacToeGameState.x:
-            next_to_move = TicTacToeGameState.o
+        if self.next_to_move == self.x:
+            next_to_move = self.o
         else:
-            next_to_move = TicTacToeGameState.x
-
-        return TicTacToeGameState(new_board, next_to_move)
+            next_to_move = self.x
+        return type(self)(new_board, next_to_move, self.win)
 
     def get_legal_actions(self):
         indices = np.where(self.board == 0)
