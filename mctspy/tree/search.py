@@ -29,10 +29,12 @@ class MonteCarloTreeSearch(object):
         if simulations_number is None :
             assert(total_simulation_seconds is not None)
             end_time = time.time() + total_simulation_seconds
-            while time.time() < end_time:
+            while True:
                 v = self._tree_policy()
                 reward = v.rollout()
                 v.backpropagate(reward)
+                if time.time() > end_time:
+                    break
         else :
             for _ in range(0, simulations_number):            
                 v = self._tree_policy()
